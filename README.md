@@ -2,14 +2,14 @@
 A Lock-Free Least Recently Used (LRU) Cache
 
 In a majority of programs, functions will be called more than once with the same inputs resulting in the same outputs. Often this can present a bottleneck and a time-space trade-off is to store inputs and outputs in a cache. As more function mappings are cached, the cache grows without bound. Therefore a strategy must be in place to evict mappings that are least useful, of which there are many. The least recently used (LRU) cached value is often a good proxy for 'least useful'.
-Note this does not have a doubly linked list connecting all map nodes and instead checks how long nodes have existed with a counter.
 
 LRU Cache
 
-To achieve O(1) access, we use a hashmap, inserting nodes from the head at tail of each buckets' list. To achieve O(1) eviction, we use an atomic counter and delete any node observed that is past its use by date. Note that this differs from the usual strategy of connecting nodes with a doubly linked list, which would require unnecessary overhead and extraordinary care. Some garbage is left behind but does not build up or leak. Note that the goal of a cache is to provide a time-space trade-off.
+To achieve O(1) access, we use a hashmap, inserting nodes from the head at tail of each buckets' list. To achieve O(1) eviction, we use an atomic counter and delete any node observed that is past its use by date. Note that this differs from the usual strategy of connecting nodes with a 
+y linked list, which would require unnecessary overhead and extraordinary care. Some garbage (average O(n) space) is left behind but does not build up or leak over time. Note that the goal of a cache is to provide a time-space trade-off.
 Hashbuckets are determined from the function inputs, and nodes in each bucket contain the values of the function inputs and their outputs. It is worth keeping in mind that there are more cache-coherent solutions, with worse big-O scaling that perform better. Linked-lists are slow.
 
-The interface includes a constructor which takes a lambda and deduces all types, a destructor and a call method `operator()`. This allows users to treat the cache with the same syntax as the lambda. This looks up the inputs in the map and returns the value, moving the node down the map and updating its counter. If the value is not found, the value is computed, and stored in the map with the value of the counter when it was created; the node at the tail of the doubly linked list is then evicted.
+The interface includes a constructor which takes a lambda and deduces all template arguments, a destructor and a call method `operator()`. This allows users to treat the cache with the same syntax as the lambda. This looks up the inputs in the map and returns the value, moving the node down the map and updating its counter. If the value is not found, the value is computed, and stored in the map with the value of the counter when it was created.
 
 Lock-Based Concurrency
 
@@ -19,7 +19,7 @@ Lock-Free Concurrency
 
 The alternative is a lock-free data structure. 'Lock-freedom' is the property that even for pathological thread scheduling, some thread will make progress. Under high contention, these significantly outperform their lock-based counterparts. Lock-free data structures rely on read-modify-write atomics. These include fetch-and-add (FAA) operations and compare-and-swap (CAS) operations.
 
-On x86, CAS operations are built on the lock cmpxchg8b and lock cmpxchg16b instructions. This operation atomically stores a value when it matches an expected value, otherwise fails. This is a flexible sledgehammer. By looping on failure, no scheduled-out thread can prevent progress; this is lock-freedom.
+On x86, CAS operations are built on the `lock cmpxchg8b` and `lock cmpxchg16b` instructions. This operation atomically stores a value when it matches an expected value, otherwise fails. This is a Swiss Army sledgehammer. By looping on failure, no scheduled-out thread can prevent progress; this is lock-freedom.
 
 FAA operations have the advantage over CAS operations that they never need to loop and retry, and can be used to produce 'wait-free' structures. These have the very strong guarantee that all running threads always make progress. Wait-freedom is a vibrant area of modern theoretical computer science research.
 
