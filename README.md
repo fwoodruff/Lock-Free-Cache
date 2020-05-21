@@ -19,7 +19,7 @@ Lock-Free Concurrency
 
 The alternative is a lock-free data structure. 'Lock-freedom' is the property that even for pathological thread scheduling, some thread will make progress. Under high contention, these significantly outperform their lock-based counterparts. Lock-free data structures rely on read-modify-write atomics. These include fetch-and-add (FAA) operations and compare-and-swap (CAS) operations.
 
-On x86, CAS operations are built on the `lock cmpxchg8b` and `lock cmpxchg16b` instructions. This operation atomically stores a value when it matches an expected value, otherwise fails. This is a Swiss Army sledgehammer. By looping on failure, no scheduled-out thread can prevent progress; this is lock-freedom.
+On x86, CAS operations are built on the `lock cmpxchg8b` and `lock cmpxchg16b` instructions. This operation atomically stores a value when it matches an expected value, otherwise fails. This is a flexible sledgehammer. By looping on failure, no scheduled-out thread can prevent progress; this is lock-freedom.
 
 FAA operations have the advantage over CAS operations that they never need to loop and retry, and can be used to produce 'wait-free' structures. These have the very strong guarantee that all running threads always make progress. Wait-freedom is a vibrant area of modern theoretical computer science research.
 
