@@ -117,7 +117,7 @@ namespace frd {
             cursor c (&head_buckets[bucket],local_time);
             while(c.get()) {
                 if(c.get()->data->k == data) {
-                    auto node = push_end(c.get()->data, bucket, local_time);
+                    auto node = push_end(c.get()->data, bucket, local_time--);
                     pop_first(node->data, bucket, local_time);
                     return c.get()->data->v;
                 } else { c.go_next(); }
@@ -131,20 +131,18 @@ namespace frd {
     
     namespace detail {
         template<class Ld>
-        struct lambda_type : lambda_type<decltype(&Ld::operator())> {}; // CRTP
+        struct lambda_type : lambda_type<decltype(&Ld::operator())> {};
         template<class Ret, class Cls, class Arg>
         struct lambda_type<Ret(Cls::*)(Arg) const> {
             using return_type = Ret;
             using arg_type = Arg;
         };
     }
+    template<class Ld> using return_type = typename detail::lambda_type<Ld>::return_type;
+    template<class Ld> using    arg_type = typename detail::lambda_type<Ld>::arg_type;
     
-    template<class Lambda> cache(Lambda) -> // CTAD
-    cache<
-        typename detail::lambda_type<Lambda>::arg_type,
-        typename detail::lambda_type<Lambda>::return_type,
-        Lambda
-    >;
+    template<class Lambda> cache(Lambda) ->
+        cache<arg_type<Lambda>, return_type<Lambda>, Lambda >;
 }
 
 #endif /* LRU_cache_hpp */
