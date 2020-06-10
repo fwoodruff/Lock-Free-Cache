@@ -1,5 +1,5 @@
 # Lock Free Cache
-A Lock-Free Least Recently Used (LRU) Cache
+A Lazy Lock-Free Least Recently Used (LRU) Cache
 
 In a majority of programs, functions will be called more than once with the same inputs resulting in the same outputs. Often this can present a bottleneck and a time-space trade-off is to store inputs and outputs in a cache. As more function mappings are cached, the cache grows without bound. Therefore a strategy must be in place to evict mappings that are least useful, of which there are many. The least recently used (LRU) cached value is often a good proxy for 'least useful'.
 
