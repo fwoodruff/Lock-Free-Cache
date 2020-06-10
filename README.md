@@ -5,8 +5,7 @@ In a majority of programs, functions will be called more than once with the same
 
 LRU Cache
 
-To achieve O(1) access, we use a hashmap, inserting nodes from the head at tail of each buckets' list. To achieve O(1) eviction, we use an atomic counter and delete any node observed that is past its use by date. Note that this differs from the usual strategy of connecting nodes with a 
-doubly linked list, which would require unnecessary overhead and extraordinary care. Some garbage (average O(n) space) is left behind but does not build up or leak over time. Note that the goal of a cache is to provide a time-space trade-off.
+To achieve O(1) access, we use a hashmap, inserting nodes from the head at tail of each buckets' list. To achieve O(1) eviction, we use an atomic counter and delete any node observed that is past its use by date. Note that this differs from the usual strategy of connecting nodes with a doubly linked list, which would require unnecessary overhead and extraordinary care. Some garbage (average O(n) space) is left behind but does not build up or leak over time. I have called this clean up 'lazy'. Note that the goal of a cache is to provide a time-space trade-off.
 Hashbuckets are determined from the function inputs, and nodes in each bucket contain the values of the function inputs and their outputs. It is worth keeping in mind that there are more cache-coherent solutions, with worse big-O scaling that perform better. Linked-lists are slow.
 
 The interface includes a constructor which takes a lambda and deduces all template arguments, a destructor and a call method `operator()`. This allows users to treat the cache with the same syntax as the lambda. This looks up the inputs in the map and returns the value, moving the node down the map and updating its counter. If the value is not found, the value is computed, and stored in the map with the value of the counter when it was created.
